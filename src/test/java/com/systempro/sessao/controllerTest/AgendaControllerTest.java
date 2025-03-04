@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,34 +23,45 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.systempro.sessao.controller.AgendaController;
 import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.dto.AgendaDTO;
 import com.systempro.sessao.service.AgendaService;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@WebMvcTest
+@WebMvcTest(AgendaController.class) // Especificando explicitamente o controller a ser testado
 @AutoConfigureMockMvc
 public class AgendaControllerTest {
 
 	static String API = "/agendas";
 
 	@Autowired
-	private  MockMvc mock;
-	
+	private MockMvc mock;
+
 	@MockBean
-	AgendaService service;
+	private AgendaService service;
 
-	
+	@MockBean
+	private ModelMapper modelMapper;
 
-	@DisplayName("Creanted new agenda")
+	@DisplayName("Created new agenda")
 	@Test
 	public void createNewAgendaTest() throws Exception {
 		
-		AgendaDTO dto = AgendaDTO.builder().id(UUID.fromString("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd")).decription("criada").build();
+		AgendaDTO dto = AgendaDTO.builder()
+				.id(UUID.fromString("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd"))
+				.decription("criada")
+				.build();
 		
-		Agenda agenda = Agenda.builder().decription("criada").build();
+		Agenda agenda = Agenda.builder()
+				.decription("criada")
+				.build();
 		
+		// Configurando o comportamento do ModelMapper
+		BDDMockito.given(modelMapper.map(Mockito.any(AgendaDTO.class), Mockito.eq(Agenda.class))).willReturn(agenda);
+		BDDMockito.given(modelMapper.map(Mockito.any(Agenda.class), Mockito.eq(AgendaDTO.class))).willReturn(dto);
+
 		BDDMockito.given(service.save(Mockito.any(Agenda.class))).willReturn(agenda);
 		
 		String json = new ObjectMapper().writeValueAsString(dto);
@@ -64,7 +76,6 @@ public class AgendaControllerTest {
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("id").value("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd"))
 				.andExpect(jsonPath("decription").value(dto.getDecription()));
-
 	}
-
 }
+
