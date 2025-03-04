@@ -19,5 +19,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Verificar login no Docker Hub
-        run: docker info
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'  # Defina a versão do Java desejada (Ex: 8, 11, 17, 21)
+          distribution: 'temurin'  # Escolha uma distribuição: 'temurin', 'zulu', 'adopt', etc.
+      - name: Build Desafil Back-End Sicredi
+        run: mvn spring-boot:build-image
