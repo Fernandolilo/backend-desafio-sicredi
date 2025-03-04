@@ -12,6 +12,8 @@ import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.dto.AgendaDTO;
 import com.systempro.sessao.service.AgendaService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/agendas")
 public class AgendaController {
@@ -27,10 +29,12 @@ public class AgendaController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public AgendaDTO create(@RequestBody AgendaDTO dto) {		
+	public AgendaDTO create(@RequestBody @Valid AgendaDTO dto) {		
 		Agenda entity = mapper.map(dto, Agenda.class);		
 		entity = service.save(entity);		
 		return mapper.map(entity, AgendaDTO.class);
 
 	}
+	
+
 }

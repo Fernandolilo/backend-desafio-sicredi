@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,8 +48,7 @@ public class AgendaControllerTest {
 
 	@DisplayName("Created new agenda")
 	@Test
-	public void createNewAgendaTest() throws Exception {
-		
+	public void createNewAgendaTest() throws Exception {		
 		AgendaDTO dto = AgendaDTO.builder()
 				.id(UUID.fromString("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd"))
 				.decription("criada")
@@ -77,5 +77,23 @@ public class AgendaControllerTest {
 				.andExpect(jsonPath("id").value("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd"))
 				.andExpect(jsonPath("decription").value(dto.getDecription()));
 	}
+	
+	@Test
+	@DisplayName("MUST throw validation error when there is null data")
+	public void createInvalidAgenda() throws Exception {
+		
+		String json = new ObjectMapper().writeValueAsString(new AgendaDTO());
+		
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.post(API)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(json);
+		mock.perform(request)
+		.andExpect(status().isBadRequest())
+		.andExpect(jsonPath("erros", Matchers.hasSize(1)));
+		
+	}
+	
 }
 
