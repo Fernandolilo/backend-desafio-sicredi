@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,6 +19,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.systempro.sessao.entity.Agenda;
+import com.systempro.sessao.entity.dto.AgendaDTO;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -34,8 +38,13 @@ public class AgendaControllerTest {
 	@DisplayName("Creanted new agenda")
 	@Test
 	public void createNewAgendaTest() throws Exception {
-
-		String json = new ObjectMapper().writeValueAsString(null);
+		
+		AgendaDTO dto = AgendaDTO.builder().decription("criada").build();
+		Agenda agenda = Agenda.builder().decription("criada").build();
+		
+		BDDMockito.given(service.save(Mockito.any(Agenda.class))).willReturn(agenda);
+		
+		String json = new ObjectMapper().writeValueAsString(dto);
 
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
 				.post(API)
@@ -45,8 +54,8 @@ public class AgendaControllerTest {
 		
 		mock.perform(request)
 				.andExpect(status().isCreated())
-				.andExpect(jsonPath("id").isNotEmpty())
-				.andExpect(jsonPath("decription").value("criada"));
+				.andExpect(jsonPath("id").value(dto.getId()))
+				.andExpect(jsonPath("decription").value(dto.getDecription()));
 
 	}
 
