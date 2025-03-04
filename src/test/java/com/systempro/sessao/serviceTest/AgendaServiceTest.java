@@ -35,9 +35,9 @@ public class AgendaServiceTest {
 	@Test
 	@DisplayName("Save new Agenda")
 	public void saveAgendaTest() {
-		Agenda agenda = Agenda.builder().id(UUID.fromString("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd")).decription("criada").build();
+		Agenda agenda = Agenda.builder().id(UUID.fromString("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd")).description("criada").build();
 		
-		Mockito.when(repository.save(agenda)).thenReturn(Agenda.builder().id(UUID.fromString("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd")).decription("criada").build());
+		Mockito.when(repository.save(agenda)).thenReturn(Agenda.builder().id(UUID.fromString("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd")).description("criada").build());
 		
 		//execução
 		Agenda savedAgenda = service.save(agenda);
@@ -45,7 +45,7 @@ public class AgendaServiceTest {
 		//verificação
 		
 		assertThat(savedAgenda.getId()).isNotNull();
-		assertThat(savedAgenda.getDecription()).isEqualTo("criada");
+		assertThat(savedAgenda.getDescription()).isEqualTo("criada");
 		
 	}
 }

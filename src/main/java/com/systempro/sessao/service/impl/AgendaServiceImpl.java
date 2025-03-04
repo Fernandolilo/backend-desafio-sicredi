@@ -19,10 +19,7 @@ public class AgendaServiceImpl implements AgendaService {
 
 	@Override
 	public Agenda save(Agenda agenda) {
-		if(!agenda.getDecription().isEmpty()){
-			return repository.save(agenda);
-		}
-		return null;
+		return repository.save(agenda);
 	}
 
 }

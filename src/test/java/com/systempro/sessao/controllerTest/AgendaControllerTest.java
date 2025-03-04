@@ -3,8 +3,6 @@ package com.systempro.sessao.controllerTest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.UUID;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,12 +48,11 @@ public class AgendaControllerTest {
 	@Test
 	public void createNewAgendaTest() throws Exception {		
 		AgendaDTO dto = AgendaDTO.builder()
-				.id(UUID.fromString("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd"))
-				.decription("criada")
+				.description("criada")
 				.build();
 		
 		Agenda agenda = Agenda.builder()
-				.decription("criada")
+				.description("criada")
 				.build();
 		
 		// Configurando o comportamento do ModelMapper
@@ -74,8 +71,7 @@ public class AgendaControllerTest {
 		
 		mock.perform(request)
 				.andExpect(status().isCreated())
-				.andExpect(jsonPath("id").value("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd"))
-				.andExpect(jsonPath("decription").value(dto.getDecription()));
+				.andExpect(jsonPath("description").value(dto.getDescription()));
 	}
 	
 	@Test
@@ -90,8 +86,8 @@ public class AgendaControllerTest {
 				.accept(MediaType.APPLICATION_JSON)
 				.content(json);
 		mock.perform(request)
-		.andExpect(status().isBadRequest())
-		.andExpect(jsonPath("erros", Matchers.hasSize(1)));
+		.andExpect(status().isBadRequest() )
+		.andExpect(jsonPath("errors", Matchers.hasSize(1)));
 		
 	}
 	
