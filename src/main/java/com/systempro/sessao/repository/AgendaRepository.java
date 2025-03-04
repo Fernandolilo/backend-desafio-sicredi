@@ -10,4 +10,6 @@ import com.systempro.sessao.entity.Agenda;
 @Repository
 public interface AgendaRepository extends JpaRepository<Agenda, UUID>{
 
+	  boolean existsByDescription(String description);
+
 }

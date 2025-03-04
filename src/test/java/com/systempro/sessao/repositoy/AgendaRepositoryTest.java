@@ -36,7 +36,7 @@ public class AgendaRepositoryTest {
 		entityManager.persist(agenda);
 		entityManager.flush();
 		
-		boolean exists = repository.existsByDescripition(descripition);
+		boolean exists = repository.existsByDescription(descripition);
 		
 		assertThat(exists).isTrue();
 	}
