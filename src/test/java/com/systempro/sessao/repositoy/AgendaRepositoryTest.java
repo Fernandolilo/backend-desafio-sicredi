@@ -40,4 +40,15 @@ public class AgendaRepositoryTest {
 		
 		assertThat(exists).isTrue();
 	}
+	
+	@Test 
+	@DisplayName("Agenda false when does not description")
+	public void falseWhenDoesNotDescription() {
+		
+		String descripition = "criada";		
+		
+		boolean exists = repository.existsByDescription(descripition);
+		
+		assertThat(exists).isFalse();
+	}
 }
