@@ -16,8 +16,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AgendaDTO {
 
-
-
 	@NotEmpty(message = "A descrição da pauta é obrigatória.")
 	private String description;
 

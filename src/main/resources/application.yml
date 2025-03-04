@@ -2,9 +2,18 @@ server:
   port: 8000
   servlet:
     context-path: /api
-spring:       
+
+spring:
   application:
     name: api
   profiles:
     active:
-    - "test"
+      - "test"
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
