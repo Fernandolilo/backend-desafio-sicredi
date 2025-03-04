@@ -4,7 +4,7 @@ server:
     context-path: /api
 spring:       
   application:
-    name: library
+    name: api
   profiles:
     active:
     - "test"

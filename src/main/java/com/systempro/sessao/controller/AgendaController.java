@@ -1,28 +1,36 @@
 package com.systempro.sessao.controller;
 
-import java.util.UUID;
-
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.dto.AgendaDTO;
+import com.systempro.sessao.service.AgendaService;
 
 @RestController
 @RequestMapping("/agendas")
 public class AgendaController {
 
+	private final AgendaService service;
+	private final ModelMapper mapper;
+
+	public AgendaController(AgendaService service, ModelMapper mapper) {
+		this.service = service;
+		this.mapper = mapper;
+	}
+
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public AgendaDTO create() {		
-		AgendaDTO age = new AgendaDTO();
-		age.setId(UUID.fromString("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd"));
+	public AgendaDTO create(@RequestBody AgendaDTO dto) {		
+		Agenda entity = mapper.map(dto, Agenda.class);		
+		entity = service.save(entity);		
+		return mapper.map(entity, AgendaDTO.class);
 
-		age.setDecription("criada");		
-		return age;
-		
 	}
 }
