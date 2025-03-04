@@ -3,6 +3,8 @@ package com.systempro.sessao.controllerTest;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +13,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,6 +24,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.dto.AgendaDTO;
+import com.systempro.sessao.service.AgendaService;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -32,6 +36,9 @@ public class AgendaControllerTest {
 
 	@Autowired
 	private  MockMvc mock;
+	
+	@MockBean
+	AgendaService service;
 
 	
 
@@ -39,7 +46,8 @@ public class AgendaControllerTest {
 	@Test
 	public void createNewAgendaTest() throws Exception {
 		
-		AgendaDTO dto = AgendaDTO.builder().decription("criada").build();
+		AgendaDTO dto = AgendaDTO.builder().id(UUID.fromString("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd")).decription("criada").build();
+		
 		Agenda agenda = Agenda.builder().decription("criada").build();
 		
 		BDDMockito.given(service.save(Mockito.any(Agenda.class))).willReturn(agenda);
@@ -54,7 +62,7 @@ public class AgendaControllerTest {
 		
 		mock.perform(request)
 				.andExpect(status().isCreated())
-				.andExpect(jsonPath("id").value(dto.getId()))
+				.andExpect(jsonPath("id").value("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd"))
 				.andExpect(jsonPath("decription").value(dto.getDecription()));
 
 	}
