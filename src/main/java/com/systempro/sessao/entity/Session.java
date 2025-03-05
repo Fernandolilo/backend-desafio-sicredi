@@ -26,6 +26,7 @@ public class Session {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
+	
 	private LocalDateTime inicio;
 	private LocalDateTime fim;
 	
