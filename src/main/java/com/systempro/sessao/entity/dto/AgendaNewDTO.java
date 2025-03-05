@@ -1,7 +1,5 @@
 package com.systempro.sessao.entity.dto;
 
-import java.util.UUID;
-
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,10 +14,8 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AgendaDTO {
+public class AgendaNewDTO {
 
-	private UUID id;
 	@NotEmpty(message = "A descrição da pauta é obrigatória.")
 	private String description;
-
 }

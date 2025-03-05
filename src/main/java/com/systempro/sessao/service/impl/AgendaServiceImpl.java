@@ -2,6 +2,7 @@ package com.systempro.sessao.service.impl;
 
 import java.util.Optional;
 
+import org.modelmapper.internal.bytebuddy.asm.Advice.Return;
 import org.springframework.stereotype.Service;
 
 import com.systempro.sessao.entity.Agenda;
@@ -26,9 +27,14 @@ public class AgendaServiceImpl implements AgendaService {
 
 
 	@Override
-	public Optional<Agenda> findByDescipton(String string) {
-		// TODO Auto-generated method stub
+	public Optional<Agenda> findByDescipton(String string) {		
 		return repository.findByDescription(string);
+	}
+
+
+	@Override
+	public boolean existsByDescription(String description) {
+		return repository.existsByDescription(description);
 	}
 
 

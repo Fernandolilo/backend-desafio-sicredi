@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.Session;
-import com.systempro.sessao.entity.dto.SessionDTO;
+import com.systempro.sessao.entity.dto.SessionNewDTO;
 import com.systempro.sessao.enuns.StatusEnum;
+import com.systempro.sessao.exceptions.AgendaNotFoundException;
 import com.systempro.sessao.service.AgendaService;
 import com.systempro.sessao.service.SessionService;
 
@@ -29,26 +29,21 @@ public class SessionController {
 
 	public SessionController(SessionService service, AgendaService agendaService) {
 		this.service = service;
-		this.agendaService =agendaService;
+		this.agendaService = agendaService;
 	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public UUID create(@RequestBody @Valid SessionDTO obj) {
-		
-		Agenda agenda = agendaService.findByDescipton(obj.getAgenda().getDescription()).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não existe pauta para seguir com sessão"));
-		
-		Session entity = Session
-				.builder()
-				.inicio(LocalDateTime.now())
-				.staus(StatusEnum.ABERTO)
-				.agenda(agenda).build();
-		
-		entity = service.save(entity);
-		
-		return entity.getId();		
-		
-	}
+	public UUID create(@RequestBody @Valid SessionNewDTO obj) {
+		Agenda agenda = agendaService.findByDescipton(obj.getAgenda())
+				.orElseThrow(() -> new AgendaNotFoundException("Não existe pauta para seguir com sessão"));
 
+		Session entity = Session.builder().inicio(LocalDateTime.now()).staus(StatusEnum.ABERTO).agenda(agenda).build();
+
+		// Como já validamos que a agenda existe, não é necessário chamar
+		// `existsByDescription` novamente
+		entity = service.save(entity);
+
+		return entity.getId();
+	}
 }
