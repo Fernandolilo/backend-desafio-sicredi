@@ -7,7 +7,7 @@ import com.systempro.sessao.entity.Agenda;
 
 public interface AgendaService {
 	Agenda save(Agenda agenda);
-	Optional<Agenda> findByDescipton(String string);
+	Optional<Agenda> findByDescripton(String string);
 	
 	boolean existsByDescription(String description);
 }

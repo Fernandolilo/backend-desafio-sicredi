@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,8 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.systempro.sessao.controller.SessionController;
 import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.Session;
-import com.systempro.sessao.entity.dto.AgendaDTO;
-import com.systempro.sessao.entity.dto.SessionDTO;
+import com.systempro.sessao.entity.dto.SessionNewDTO;
 import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.service.AgendaService;
 import com.systempro.sessao.service.SessionService;
@@ -54,54 +54,43 @@ public class SessionControllerTest {
 	@Test
 	@DisplayName("Sessions new")
 	public void createSessions() throws Exception {
-	    
-	    LocalDateTime agora = LocalDateTime.now();
-	    LocalDateTime fim = agora.plusMinutes(1);
 
-	    // Criar um objeto AgendaDTO válido
-	    AgendaDTO agendaDTO = AgendaDTO.builder()
-	            .description("criada")
-	            .build();
+		LocalDateTime agora = LocalDateTime.now();
+		
+		// Criar DTO correto
+		SessionNewDTO dto = SessionNewDTO.builder()
+		        .agenda("criada") // Correspondente ao que o controller espera
+		        .build();
 
-	    // Criar o DTO da Sessão com uma agenda válida
-	    SessionDTO dto = SessionDTO.builder()
-	            .inicio(agora)
-	            .fim(fim)
-	            .status(StatusEnum.ABERTO)
-	            .agenda(agendaDTO) // Adicionando a agenda ao DTO
-	            .build();
+		String json = new ObjectMapper().writeValueAsString(dto);
 
-	    String json = new ObjectMapper().writeValueAsString(dto);
+		// Criar objeto Agenda válido
+		Agenda agenda = Agenda.builder()
+		        .description("criada")
+		        .build();
 
-	    // Criar um objeto Agenda válido
-	    Agenda agenda = Agenda.builder()
-	            .description("criada")
-	            .build();
+		// Mock do serviço de agenda
+		BDDMockito.given(agendaService.findByDescripton("criada")).willReturn(Optional.of(agenda));
 
-	    // Mock do serviço de agenda
-	    BDDMockito.given(agendaService.save(Mockito.any(Agenda.class))).willReturn(agenda);
-	    BDDMockito.given(agendaService.findByDescipton("criada")).willReturn(Optional.of(agenda));
+		// Criar objeto Sessão válido com ID
+		Session session = Session.builder()
+		        .id(UUID.randomUUID())  // Adicionando ID válido
+		        .inicio(agora)
+		        .staus(StatusEnum.ABERTO)
+		        .agenda(agenda)
+		        .build();
 
-	    // Criar um objeto Sessão válido
-	    Session session = Session.builder()
-	            .inicio(agora)
-	            .fim(fim)
-	            .agenda(agenda)
-	            .staus(StatusEnum.ABERTO)
-	            .build();
+		// Mock do serviço de sessão
+		BDDMockito.given(service.save(Mockito.any(Session.class))).willReturn(session);
 
-	    // Mock do serviço de sessão
-	    BDDMockito.given(service.save(Mockito.any(Session.class))).willReturn(session);
+		// Criar e executar a requisição Mock
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(SESSION)
+		        .accept(MediaType.APPLICATION_JSON)
+		        .contentType(MediaType.APPLICATION_JSON)
+		        .content(json);
 
-	    // Criar e executar a requisição Mock
-	    MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(SESSION)
-	            .accept(MediaType.APPLICATION_JSON)
-	            .contentType(MediaType.APPLICATION_JSON)
-	            .content(json);
-
-	    mockMvc.perform(request)
-	            .andExpect(status().isCreated())
-	          ;
+		mockMvc.perform(request)
+		        .andExpect(status().isCreated());
 	}
 
 }

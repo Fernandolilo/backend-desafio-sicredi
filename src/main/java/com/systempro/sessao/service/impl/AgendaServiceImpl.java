@@ -2,7 +2,6 @@ package com.systempro.sessao.service.impl;
 
 import java.util.Optional;
 
-import org.modelmapper.internal.bytebuddy.asm.Advice.Return;
 import org.springframework.stereotype.Service;
 
 import com.systempro.sessao.entity.Agenda;
@@ -27,7 +26,7 @@ public class AgendaServiceImpl implements AgendaService {
 
 
 	@Override
-	public Optional<Agenda> findByDescipton(String string) {		
+	public Optional<Agenda> findByDescripton(String string) {		
 		return repository.findByDescription(string);
 	}
 
