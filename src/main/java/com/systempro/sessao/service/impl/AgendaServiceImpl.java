@@ -1,5 +1,7 @@
 package com.systempro.sessao.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.systempro.sessao.entity.Agenda;
@@ -20,6 +22,12 @@ public class AgendaServiceImpl implements AgendaService {
 	@Override
 	public Agenda save(Agenda agenda) {
 		return repository.save(agenda);
+	}
+
+
+	@Override
+	public Optional<Agenda> getByDescipton(String string) {
+		return Optional.empty();
 	}
 
 }
