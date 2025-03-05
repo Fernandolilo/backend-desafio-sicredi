@@ -8,5 +8,6 @@ import com.systempro.sessao.entity.Agenda;
 public interface AgendaService {
 	Agenda save(Agenda agenda);
 
-	Optional<Agenda> getByDescipton(String string);
+	Optional<Agenda> findByDescipton(String string);
+	
 }

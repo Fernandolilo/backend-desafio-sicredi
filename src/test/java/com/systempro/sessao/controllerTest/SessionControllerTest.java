@@ -81,7 +81,7 @@ public class SessionControllerTest {
 
 	    // Mock do serviço de agenda
 	    BDDMockito.given(agendaService.save(Mockito.any(Agenda.class))).willReturn(agenda);
-	    BDDMockito.given(agendaService.getByDescipton("criada")).willReturn(Optional.of(agenda));
+	    BDDMockito.given(agendaService.findByDescipton("criada")).willReturn(Optional.of(agenda));
 
 	    // Criar um objeto Sessão válido
 	    Session session = Session.builder()

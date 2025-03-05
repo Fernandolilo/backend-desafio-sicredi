@@ -26,8 +26,12 @@ public class AgendaServiceImpl implements AgendaService {
 
 
 	@Override
-	public Optional<Agenda> getByDescipton(String string) {
-		return Optional.empty();
+	public Optional<Agenda> findByDescipton(String string) {
+		// TODO Auto-generated method stub
+		return repository.findByDescription(string);
 	}
+
+
+
 
 }
