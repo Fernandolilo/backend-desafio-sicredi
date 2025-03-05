@@ -33,7 +33,7 @@ public class AgendaServiceTest {
 	}
 	
 	@Test
-	@DisplayName("Save new Agenda")
+	@DisplayName("Save new Session")
 	public void saveAgendaTest() {
 		Agenda agenda = Agenda.builder().id(UUID.fromString("a1b2c3d4-e5f6-7890-ab12-cd34ef56abcd")).description("criada").build();
 		
