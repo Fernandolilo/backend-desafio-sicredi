@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.systempro.sessao.controller.AgendaController;
 import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.dto.AgendaDTO;
+import com.systempro.sessao.entity.dto.AgendaNewDTO;
 import com.systempro.sessao.service.AgendaService;
 
 @ExtendWith(SpringExtension.class)
@@ -47,17 +48,19 @@ public class AgendaControllerTest {
 	@DisplayName("Created new agenda")
 	@Test
 	public void createNewAgendaTest() throws Exception {		
-		AgendaDTO dto = AgendaDTO.builder()
+		AgendaNewDTO dto = AgendaNewDTO.builder()
 				.description("criada")
 				.build();
+		
+		AgendaDTO agendaDTO = AgendaDTO.builder().description(dto.getDescription()).build();
 		
 		Agenda agenda = Agenda.builder()
 				.description("criada")
 				.build();
 		
 		// Configurando o comportamento do ModelMapper
-		BDDMockito.given(modelMapper.map(Mockito.any(AgendaDTO.class), Mockito.eq(Agenda.class))).willReturn(agenda);
-		BDDMockito.given(modelMapper.map(Mockito.any(Agenda.class), Mockito.eq(AgendaDTO.class))).willReturn(dto);
+		BDDMockito.given(modelMapper.map(Mockito.any(AgendaNewDTO.class), Mockito.eq(Agenda.class))).willReturn(agenda);
+		BDDMockito.given(modelMapper.map(Mockito.any(Agenda.class), Mockito.eq(AgendaDTO.class))).willReturn(agendaDTO);
 
 		BDDMockito.given(service.save(Mockito.any(Agenda.class))).willReturn(agenda);
 		
@@ -78,7 +81,7 @@ public class AgendaControllerTest {
 	@DisplayName("MUST throw validation error when there is null data")
 	public void createInvalidAgenda() throws Exception {
 		
-		String json = new ObjectMapper().writeValueAsString(new AgendaDTO());
+		String json = new ObjectMapper().writeValueAsString(new AgendaNewDTO());
 		
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
 				.post(API)
