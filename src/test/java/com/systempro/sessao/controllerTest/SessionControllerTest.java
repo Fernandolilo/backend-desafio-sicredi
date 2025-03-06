@@ -32,7 +32,6 @@ import com.systempro.sessao.entity.Vote;
 import com.systempro.sessao.entity.dto.SessionNewDTO;
 import com.systempro.sessao.entity.dto.VoteNewDTO;
 import com.systempro.sessao.enuns.StatusEnum;
-import com.systempro.sessao.enuns.VoteEnum;
 import com.systempro.sessao.service.AgendaService;
 import com.systempro.sessao.service.SessionService;
 import com.systempro.sessao.service.VoteService;

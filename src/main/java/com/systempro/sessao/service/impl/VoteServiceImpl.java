@@ -3,6 +3,7 @@ package com.systempro.sessao.service.impl;
 import org.springframework.stereotype.Service;
 
 import com.systempro.sessao.entity.Vote;
+import com.systempro.sessao.repository.VoteRepository;
 import com.systempro.sessao.service.VoteService;
 
 @Service
