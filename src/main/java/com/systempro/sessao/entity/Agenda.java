@@ -3,6 +3,8 @@ package com.systempro.sessao.entity;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +30,7 @@ public class Agenda {
 	@NotEmpty
 	private String description;
 	
+	@JsonBackReference
 	@OneToMany(mappedBy = "agenda", fetch = FetchType.LAZY)
 	private List<Session> sessions;
 }

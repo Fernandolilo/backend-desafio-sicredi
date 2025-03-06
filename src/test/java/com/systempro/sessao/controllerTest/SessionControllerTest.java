@@ -130,6 +130,47 @@ public class SessionControllerTest {
 	        .andExpect(jsonPath("$[0].agenda.description").value("criada"));  // Confirma descrição da agenda
 	}
 
+	@Test
+	@DisplayName("vote agenda")
+	public void voteAgenda () throws Exception {
+
+		LocalDateTime agora = LocalDateTime.now();
+		
+		// Criar DTO correto
+		SessionNewDTO dto = SessionNewDTO.builder()
+		        .agenda("criada") // Correspondente ao que o controller espera
+		        .build();
+
+		String json = new ObjectMapper().writeValueAsString(dto);
+
+		// Criar objeto Agenda válido
+		Agenda agenda = Agenda.builder()
+		        .description("criada")
+		        .build();
+
+		// Mock do serviço de agenda
+		BDDMockito.given(agendaService.findByDescripton("criada")).willReturn(Optional.of(agenda));
+
+		// Criar objeto Sessão válido com ID
+		Session session = Session.builder()
+		        .id(UUID.randomUUID())  // Adicionando ID válido
+		        .inicio(agora)
+		        .status(StatusEnum.ABERTO)
+		        .agenda(agenda)
+		        .build();
+
+		// Mock do serviço de sessão
+		BDDMockito.given(service.save(Mockito.any(Session.class))).willReturn(session);
+
+		// Criar e executar a requisição Mock
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(SESSION)
+		        .accept(MediaType.APPLICATION_JSON)
+		        .contentType(MediaType.APPLICATION_JSON)
+		        .content(json);
+
+		mockMvc.perform(request)
+		        .andExpect(status().isCreated());
+	}
 
 
 	
