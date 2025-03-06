@@ -15,31 +15,28 @@ import com.systempro.sessao.service.AgendametnoSessionService;
 @Service
 public class AgendamentoSessionServiceImpl implements AgendametnoSessionService {
 
-	private final SessionRepository sessionRepository;
+    private final SessionRepository repository;
 
-	public AgendamentoSessionServiceImpl(SessionRepository sessionRepository) {
-		this.sessionRepository = sessionRepository;
-	}
+    public AgendamentoSessionServiceImpl(SessionRepository repository) {
+        this.repository = repository;
+    }
 
-	@Override
-	@Scheduled(cron = "0 0/1 * 1/1 * ?")
-	public void agendamentoTarefas() {
-		// Busca as sessões com status "ABERTO"
-		List<Session> abertas = sessionRepository.findByStatus(StatusEnum.ABERTO);
+    @Override
+    @Scheduled(cron = "0 0/1 * 1/1 * ?")
+    public void agendamentoTarefas() {
+        // Busca as sessões com status "ABERTO"
+        List<Session> abertas = repository.findByStatus(StatusEnum.ABERTO);
 
-		List<Session> sessionsFechadas = abertas.stream()
-				.filter(s -> s
-						.getInicio().isBefore(LocalDateTime.now().minusMinutes(1)))
-						.collect(Collectors.toList());
-		                abertas.stream()
-		                .filter(s -> s.getInicio()
-		                		.isBefore(LocalDateTime.now()
-		                				.minusMinutes(1))).forEach(s -> {
-		    s.setFim(LocalDateTime.now());            					
-			s.setStatus(StatusEnum.FECHADO);
-			sessionRepository.save(s); // Salvar no banco
-		});
+        // Filtra as sessões abertas que estão a mais de 1 minuto do início
+        List<Session> sessionsFechadas = abertas.stream()
+                .filter(s -> s.getInicio().isBefore(LocalDateTime.now().minusMinutes(1)))
+                .collect(Collectors.toList());
 
-	}
-
+        // Fechar as sessões e atualizar o status para "FECHADO"
+        sessionsFechadas.forEach(s -> {
+            s.setFim(LocalDateTime.now());
+            s.setStatus(StatusEnum.FECHADO);
+            repository.save(s); // Salvar no banco
+        });
+    }
 }
