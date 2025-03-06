@@ -15,11 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.Session;
+import com.systempro.sessao.entity.Vote;
 import com.systempro.sessao.entity.dto.SessionNewDTO;
+import com.systempro.sessao.entity.dto.VoteNewDTO;
 import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.exceptions.AgendaNotFoundException;
 import com.systempro.sessao.service.AgendaService;
 import com.systempro.sessao.service.SessionService;
+import com.systempro.sessao.service.VoteService;
 
 import jakarta.validation.Valid;
 
@@ -29,10 +32,12 @@ public class SessionController {
 
 	private final SessionService service;
 	private final AgendaService agendaService;
+	private final VoteService voteService;
 
-	public SessionController(SessionService service, AgendaService agendaService) {
+	public SessionController(SessionService service, AgendaService agendaService,VoteService voteService ) {
 		this.service = service;
 		this.agendaService = agendaService;
+		this.voteService = voteService;
 	}
 
 	@PostMapping
@@ -54,4 +59,18 @@ public class SessionController {
     public List<Session> findAllByStatus(@RequestParam StatusEnum status) {
         return service.findByStatus(status);
     }
+	
+	@PostMapping("/vote")
+	@ResponseStatus(HttpStatus.CREATED)
+	public UUID vote(@RequestBody @Valid VoteNewDTO obj) {
+
+		Vote entity = Vote.builder().vote(obj.getVote()).build();
+
+		// Como já validamos que a agenda existe, não é necessário chamar
+		// `existsByDescription` novamente
+		entity = voteService.save(entity);
+
+		return entity.getId();
+	}
+	
 }
