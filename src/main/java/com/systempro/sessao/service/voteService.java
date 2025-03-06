@@ -5,4 +5,5 @@ import com.systempro.sessao.entity.Vote;
 public interface VoteService {
 
 	Vote save(Vote any);
+
 }
