@@ -33,6 +33,6 @@ public class Session {
 	@JoinColumn(name = "id_agenda")
 	@ManyToOne
 	private Agenda agenda;
-	private StatusEnum staus;
+	private StatusEnum status;
 
 }

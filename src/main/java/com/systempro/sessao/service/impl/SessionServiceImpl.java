@@ -1,8 +1,11 @@
 package com.systempro.sessao.service.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.systempro.sessao.entity.Session;
+import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.repository.SessionRepository;
 import com.systempro.sessao.service.SessionService;
 
@@ -22,6 +25,14 @@ public class SessionServiceImpl implements SessionService{
 	@Override
 	public Session save(Session session) {
 		return repositoy.save(session);
+	}
+
+
+
+	@Override
+	public List<Session> findByStatus(StatusEnum status) {
+		// TODO Auto-generated method stub
+		return repositoy.findByStatus(status);
 	}
 
 }

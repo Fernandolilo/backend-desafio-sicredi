@@ -1,8 +1,10 @@
 package com.systempro.sessao.controllerTest;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -76,7 +78,7 @@ public class SessionControllerTest {
 		Session session = Session.builder()
 		        .id(UUID.randomUUID())  // Adicionando ID válido
 		        .inicio(agora)
-		        .staus(StatusEnum.ABERTO)
+		        .status(StatusEnum.ABERTO)
 		        .agenda(agenda)
 		        .build();
 
@@ -93,4 +95,43 @@ public class SessionControllerTest {
 		        .andExpect(status().isCreated());
 	}
 
+	
+	@Test
+	@DisplayName("Find all sessions by status")
+	public void findAllSessionsByStatus() throws Exception {
+	    LocalDateTime agora = LocalDateTime.now();
+
+	    // Criar objeto Agenda
+	    Agenda agenda = Agenda.builder()
+	            .description("criada")
+	            .build();
+
+	    // Criar lista de sessões
+	    List<Session> sessions = List.of(
+	        Session.builder()
+	            .id(UUID.randomUUID())
+	            .inicio(agora)
+	            .status(StatusEnum.ABERTO) // Verifique se este é o nome correto do campo!
+	            .agenda(agenda)
+	            .build()
+	    );
+
+	    // Mock correto para um método que retorna List<Session>
+	    BDDMockito.given(service.findByStatus(StatusEnum.ABERTO)).willReturn(sessions);
+
+	    // Executar requisição Mock com parâmetro de status
+	    mockMvc.perform(MockMvcRequestBuilders.get(SESSION.concat("/aberto"))
+	            .param("status", "ABERTO")  // Passando status como parâmetro
+	            .accept(MediaType.APPLICATION_JSON))
+	        .andExpect(status().isOk())
+	        .andExpect(jsonPath("$.length()").value(sessions.size()))  // Verifica tamanho da lista
+	        .andExpect(jsonPath("$[0].id").exists())  // Confirma que há um ID na sessão retornada
+	        .andExpect(jsonPath("$[0].status").value("ABERTO"))  // Confirma que o status retornado é "ABERTO"
+	        .andExpect(jsonPath("$[0].agenda.description").value("criada"));  // Confirma descrição da agenda
+	}
+
+
+
+	
+	
 }
