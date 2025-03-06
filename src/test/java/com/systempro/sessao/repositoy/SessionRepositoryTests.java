@@ -24,8 +24,6 @@ import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.repository.AgendaRepository;
 import com.systempro.sessao.repository.SessionRepository;
 
-import jakarta.transaction.Transactional;
-
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @DataJpaTest

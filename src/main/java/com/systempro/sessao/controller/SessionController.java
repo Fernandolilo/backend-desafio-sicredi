@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.Session;
 import com.systempro.sessao.entity.Vote;
-import com.systempro.sessao.entity.dto.SessionDTO;
 import com.systempro.sessao.entity.dto.SessionNewDTO;
 import com.systempro.sessao.entity.dto.VoteDTO;
 import com.systempro.sessao.entity.dto.VoteNewDTO;
@@ -51,7 +50,6 @@ public class SessionController {
 	public UUID create(@RequestBody @Valid SessionNewDTO obj) {
 		Agenda agenda = agendaService.findByDescripton(obj.getAgenda())
 				.orElseThrow(() -> new AgendaNotFoundException("Não existe pauta para seguir com sessão"));
-
 		Session entity = Session.builder().inicio(LocalDateTime.now()).status(StatusEnum.ABERTO).agenda(agenda).build();
 
 		// Como já validamos que a agenda existe, não é necessário chamar
