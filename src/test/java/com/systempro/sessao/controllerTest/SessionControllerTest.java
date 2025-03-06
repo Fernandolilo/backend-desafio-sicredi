@@ -36,7 +36,7 @@ import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.enuns.VoteEnum;
 import com.systempro.sessao.service.AgendaService;
 import com.systempro.sessao.service.SessionService;
-import com.systempro.sessao.service.VoteService;
+import com.systempro.sessao.service.VotacaoService;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -56,7 +56,7 @@ public class SessionControllerTest {
 	private SessionService service;
 
 	@MockBean
-	private VoteService voteService;
+	private VotacaoService votacaoService;
 
 	@MockBean
 	private ModelMapper modelMapper;
@@ -146,7 +146,7 @@ public class SessionControllerTest {
 
 		Vote vote = Vote.builder().session(session).vote(voteNewDTO.getVote()).build();
 
-		BDDMockito.given(voteService.save(Mockito.any(Vote.class))).willReturn(vote);
+		BDDMockito.given(votacaoService.save(Mockito.any(Vote.class))).willReturn(vote);
 
 		String json = new ObjectMapper().writeValueAsString(voteNewDTO);
 
@@ -187,7 +187,7 @@ public class SessionControllerTest {
 				.build();
 
 		// Mock do serviço de voto
-		BDDMockito.given(voteService.save(Mockito.any(Vote.class))).willReturn(vote);
+		BDDMockito.given(votacaoService.save(Mockito.any(Vote.class))).willReturn(vote);
 
 		// Converter o DTO para JSON
 		String json = new ObjectMapper().writeValueAsString(dto);

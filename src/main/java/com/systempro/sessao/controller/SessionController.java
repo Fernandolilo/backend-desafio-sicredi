@@ -24,7 +24,7 @@ import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.exceptions.AgendaNotFoundException;
 import com.systempro.sessao.service.AgendaService;
 import com.systempro.sessao.service.SessionService;
-import com.systempro.sessao.service.VoteService;
+import com.systempro.sessao.service.VotacaoService;
 
 import jakarta.validation.Valid;
 
@@ -34,14 +34,14 @@ public class SessionController {
 
 	private final SessionService service;
 	private final AgendaService agendaService;
-	private final VoteService voteService;
+	private final VotacaoService votacaoService;
 	private final ModelMapper mapper;
 
 	public SessionController(SessionService service, AgendaService agendaService,
-			VoteService voteService, ModelMapper mapper) {
+			VotacaoService votacaoService, ModelMapper mapper) {
 		this.service = service;
 		this.agendaService = agendaService;
-		this.voteService = voteService;
+		this.votacaoService = votacaoService;
 		this.mapper = mapper;
 	}
 
@@ -79,7 +79,7 @@ public class SessionController {
 
 		// Como já validamos que a agenda existe, não é necessário chamar
 		// `existsByDescription` novamente
-		entity = voteService.save(entity);
+		entity = votacaoService.save(entity);
 
 		return obj.getId_session();
 	}
@@ -98,7 +98,7 @@ public class SessionController {
 
 		// Como já validamos que a agenda existe, não é necessário chamar
 		// `existsByDescription` novamente
-		entity = voteService.save(entity);
+		entity = votacaoService.save(entity);
 		
 		VoteDTO dto = mapper.map(entity, VoteDTO.class);
 

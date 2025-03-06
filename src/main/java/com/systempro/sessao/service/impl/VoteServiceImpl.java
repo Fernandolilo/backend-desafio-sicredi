@@ -4,10 +4,10 @@ import org.springframework.stereotype.Service;
 
 import com.systempro.sessao.entity.Vote;
 import com.systempro.sessao.repository.VoteRepository;
-import com.systempro.sessao.service.VoteService;
+import com.systempro.sessao.service.VotacaoService;
 
 @Service
-public class VoteServiceImpl implements VoteService {
+public class VoteServiceImpl implements VotacaoService {
 
     private final VoteRepository repository;
 
