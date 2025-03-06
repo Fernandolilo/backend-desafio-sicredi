@@ -197,7 +197,8 @@ public class SessionControllerTest {
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(json);
 
 		// Executar o teste
-		mockMvc.perform(request).andExpect(status().isCreated()) // Espera status HTTP 201
+		mockMvc.perform(request).andExpect(status()
+				.isCreated()) // Espera status HTTP 201
 		; // Verifica se o voto foi "SIM"
 	}
 
