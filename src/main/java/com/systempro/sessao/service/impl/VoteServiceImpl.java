@@ -8,10 +8,18 @@ import com.systempro.sessao.service.VoteService;
 @Service
 public class VoteServiceImpl implements VoteService{
 
+	private final VoteRepository repository;
+
+	
+	public VoteServiceImpl(VoteRepository repository) {
+		this.repository = repository;
+	}
+
+
 	@Override
 	public Vote save(Vote vote) {
 		// TODO Auto-generated method stub
-		return null;
+		return repository.save(vote);
 	}
 
 	
