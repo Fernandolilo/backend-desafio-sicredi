@@ -77,7 +77,7 @@ public class SessionControllerTest {
 		Agenda agenda = Agenda.builder().description("criada").build();
 
 		// Mock do serviço de agenda
-		BDDMockito.given(agendaService.findByDescripton("criada")).willReturn(Optional.of(agenda));
+		BDDMockito.given(agendaService.findByDescription("criada")).willReturn(Optional.of(agenda));
 
 		// Criar objeto Sessão válido com ID
 		Session session = Session.builder().id(UUID.randomUUID()) // Adicionando ID válido
@@ -129,7 +129,7 @@ public class SessionControllerTest {
 		Agenda agenda = Agenda.builder().description("criada").build();
 
 		// Mock do serviço de agenda
-		BDDMockito.given(agendaService.findByDescripton("criada")).willReturn(Optional.of(agenda));
+		BDDMockito.given(agendaService.findByDescription("criada")).willReturn(Optional.of(agenda));
 
 		UUID id = UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4a"); // Adicionando ID válido
 
@@ -172,7 +172,7 @@ public class SessionControllerTest {
 		Agenda agenda = Agenda.builder().description("criada").build();
 
 		// Mock do serviço de agenda
-		BDDMockito.given(agendaService.findByDescripton("criada")).willReturn(Optional.of(agenda));
+		BDDMockito.given(agendaService.findByDescription("criada")).willReturn(Optional.of(agenda));
 
 		// Criar objeto Sessão válido com ID
 		Session session = Session.builder().id(UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4a")).inicio(agora)
