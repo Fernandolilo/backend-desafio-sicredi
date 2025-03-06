@@ -48,7 +48,7 @@ public class SessionController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public UUID create(@RequestBody @Valid SessionNewDTO obj) {
-		Agenda agenda = agendaService.findByDescripton(obj.getAgenda())
+		Agenda agenda = agendaService.findByDescription(obj.getAgenda())
 				.orElseThrow(() -> new AgendaNotFoundException("Não existe pauta para seguir com sessão"));
 		Session entity = Session.builder().inicio(LocalDateTime.now()).status(StatusEnum.ABERTO).agenda(agenda).build();
 
