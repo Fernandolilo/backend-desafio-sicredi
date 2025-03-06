@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.Session;
@@ -49,7 +50,8 @@ public class SessionController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public UUID create(@RequestBody @Valid SessionNewDTO obj) {
 		Agenda agenda = agendaService.findByDescripton(obj.getAgenda())
-				.orElseThrow(() -> new AgendaNotFoundException("Não existe pauta para seguir com sessão"));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		
 		Session entity = Session.builder().inicio(LocalDateTime.now()).status(StatusEnum.ABERTO).agenda(agenda).build();
 
 		// Como já validamos que a agenda existe, não é necessário chamar
@@ -73,7 +75,7 @@ public class SessionController {
 		 * IllegalArgumentException("ID da sessão não pode ser nulo"); }
 		 */
 		Session vote = service.findById(obj.getId_session())
-				.orElseThrow(() -> new AgendaNotFoundException("Não existe sessão"));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
 		Vote entity = Vote.builder().session(vote).vote(obj.getVote()).build();
 
@@ -92,7 +94,7 @@ public class SessionController {
 		 * IllegalArgumentException("ID da sessão não pode ser nulo"); }
 		 */
 		Session vote = service.findById(obj.getId_session())
-				.orElseThrow(() -> new AgendaNotFoundException("Não existe sessão"));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
 		Vote entity = Vote.builder().session(vote).vote(obj.getVote()).build();
 
