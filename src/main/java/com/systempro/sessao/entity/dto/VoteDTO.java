@@ -17,7 +17,6 @@ public class VoteDTO {
 
 	
 	private UUID id;
-	//private Session session;
 	private VoteEnum vote;
 	
 	

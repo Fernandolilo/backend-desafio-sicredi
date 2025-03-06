@@ -17,9 +17,6 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public Vote save(Vote vote) {
-    	 if (vote == null || vote.getSession() == null) {
-    	        throw new IllegalArgumentException("Vote or Session cannot be null");
-    	    }
         return repository.save(vote);
     }
 }
