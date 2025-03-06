@@ -27,7 +27,8 @@ public class Agenda {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
-	@NotEmpty
+	
+	@NotEmpty(message = "A descrição da pauta é obrigatória.")
 	private String description;
 	
 	@JsonBackReference

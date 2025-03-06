@@ -28,10 +28,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.systempro.sessao.controller.SessionController;
 import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.Session;
+import com.systempro.sessao.entity.Vote;
 import com.systempro.sessao.entity.dto.SessionNewDTO;
+import com.systempro.sessao.entity.dto.VoteNewDTO;
 import com.systempro.sessao.enuns.StatusEnum;
+import com.systempro.sessao.enuns.VoteEnum;
 import com.systempro.sessao.service.AgendaService;
 import com.systempro.sessao.service.SessionService;
+import com.systempro.sessao.service.voteService;
 
 
 
@@ -51,6 +55,10 @@ public class SessionControllerTest {
 
 	@MockBean
 	private SessionService service;
+	
+	@MockBean
+	private voteService voteService;
+
 	
 
 	@Test
@@ -161,15 +169,25 @@ public class SessionControllerTest {
 
 		// Mock do serviço de sessão
 		BDDMockito.given(service.save(Mockito.any(Session.class))).willReturn(session);
+		
+		VoteNewDTO voteNewDTO = VoteNewDTO.builder()
+		        .build();
+		
+		Vote vote = Vote.builder().vote(voteNewDTO.getVote()).build();
+		
+		BDDMockito.given(voteService.save(Mockito.any(Vote.class))).willReturn(vote);
+
+		
 
 		// Criar e executar a requisição Mock
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(SESSION)
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(SESSION.concat("/vote"))
 		        .accept(MediaType.APPLICATION_JSON)
 		        .contentType(MediaType.APPLICATION_JSON)
 		        .content(json);
 
 		mockMvc.perform(request)
-		        .andExpect(status().isCreated());
+		        .andExpect(status().isCreated())
+		        .andExpect(jsonPath("vote").value("SIM"));
 	}
 
 
