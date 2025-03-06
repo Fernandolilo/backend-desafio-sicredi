@@ -81,7 +81,7 @@ public class SessionController {
 		// `existsByDescription` novamente
 		entity = voteService.save(entity);
 
-		return entity.getId();
+		return obj.getId_session();
 	}
 	
 	@PostMapping("/votedto")
