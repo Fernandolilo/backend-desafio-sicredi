@@ -6,6 +6,6 @@ public interface VotacaoService {
 
 	Vote save(Vote any);
 	
-	void publicshVoteToKafka(Vote vote);
+	
 
 }

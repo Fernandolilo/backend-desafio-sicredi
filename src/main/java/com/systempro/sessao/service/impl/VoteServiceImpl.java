@@ -23,9 +23,5 @@ public class VoteServiceImpl implements VotacaoService {
 		return repository.save(vote);
 	}
 
-	@Override
-	public void publicshVoteToKafka(Vote vote) {
-		String message = "ID: " + vote.getId() + "Voto" + vote.getVote();
-		kafkaTemplate.send("votes-topic", message);
-	}
+	
 }
