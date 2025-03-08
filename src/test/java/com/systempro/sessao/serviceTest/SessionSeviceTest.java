@@ -38,6 +38,10 @@ public class SessionSeviceTest {
 	SessionService service;
 	
 	
+	private LocalDateTime agora = LocalDateTime.now();
+	private LocalDateTime fim = agora.plusMinutes(1);
+	
+	
 	@BeforeEach
 	public void setUp() {
 		this.service = new SessionServiceImpl(repository);
@@ -46,9 +50,7 @@ public class SessionSeviceTest {
 	@Test
 	@DisplayName("Save new Agenda")
 	public void saveAgendaTest() {
-		LocalDateTime agora = LocalDateTime.now();
-	    LocalDateTime fim = agora.plusMinutes(1);
-		
+				
 	    Agenda agenda = Agenda.builder().description("criada").build();
 		
 		Session session = Session.builder().inicio(agora).agenda(agenda).build();
