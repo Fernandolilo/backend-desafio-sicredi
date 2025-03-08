@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.systempro.sessao.controller.SessionController;
 import com.systempro.sessao.entity.Agenda;
+import com.systempro.sessao.entity.Associated;
 import com.systempro.sessao.entity.Session;
 import com.systempro.sessao.entity.Vote;
 import com.systempro.sessao.entity.dto.SessionNewDTO;
@@ -51,6 +52,9 @@ public class SessionControllerTest {
 
 	@MockBean
 	private AgendaService agendaService;
+
+	@MockBean
+	private AssociatedService associatedService;
 
 	@MockBean
 	private SessionService service;
@@ -118,7 +122,7 @@ public class SessionControllerTest {
 				.andExpect(jsonPath("$[0].status").value("ABERTO")) // Confirma que o status retornado é "ABERTO"
 				.andExpect(jsonPath("$[0].agenda.description").value("criada")); // Confirma descrição da agenda
 	}
-
+/*/
 	@Test
 	@DisplayName("vote agenda")
 	public void voteAgenda() throws Exception {
@@ -156,8 +160,53 @@ public class SessionControllerTest {
 
 		mockMvc.perform(request).andExpect(status().isCreated());
 		// .andExpect(jsonPath("vote").value("SIM"));
+	} */
+
+	
+	@Test
+	@DisplayName("vote agenda")
+	public void voteAgenda() throws Exception {
+
+		LocalDateTime agora = LocalDateTime.now();
+
+		// Criar objeto Agenda válido
+		Agenda agenda = Agenda.builder().description("criada").build();
+
+		// Mock do serviço de agenda
+		BDDMockito.given(agendaService.findByDescription("criada")).willReturn(Optional.of(agenda));
+
+		UUID id = UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4a"); // Adicionando ID válido
+
+		// Criar objeto Sessão válido com ID
+		Session session = Session.builder().inicio(agora).status(StatusEnum.ABERTO).agenda(agenda).build();
+
+		// Mock do serviço de sessão
+		BDDMockito.given(service.save(Mockito.any(Session.class))).willReturn(session);
+
+		VoteNewDTO voteNewDTO = VoteNewDTO.builder().vote(VoteEnum.SIM).id_session(id) // Certifique-se de passar um ID
+																						// válido
+				.build();
+		BDDMockito.given(service.findById(id)).willReturn(Optional.of(session));
+
+		Associated associated = Associated.builder().cpf("12312312311").nome("Fernando").build();
+		// Mock do serviço de associados
+		BDDMockito.given(associatedService.save(Mockito.any(Associated.class))).willReturn(session);
+		
+		Vote vote = Vote.builder().session(session).vote(voteNewDTO.getVote()).build();
+
+		BDDMockito.given(votacaoService.save(Mockito.any(Vote.class))).willReturn(vote);
+
+		String json = new ObjectMapper().writeValueAsString(voteNewDTO);
+
+		// Criar e executar a requisição Mock
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(SESSION.concat("/vote"))
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(json);
+
+		mockMvc.perform(request).andExpect(status().isCreated());
+		// .andExpect(jsonPath("vote").value("SIM"));
 	}
 
+	
 	@Test
 	@DisplayName("vote agenda dto")
 	public void voteAgendadto() throws Exception {
