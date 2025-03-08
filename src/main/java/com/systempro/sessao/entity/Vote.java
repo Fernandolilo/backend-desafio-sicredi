@@ -22,4 +22,8 @@ public class Vote {
     @ManyToOne
     @JoinColumn(name = "id_session", nullable = false) // Garante que não seja nulo
     private Session session;
+    
+    @ManyToOne
+    @JoinColumn(name = "id_associated", nullable = false) // Garante que não seja nulo
+    private Associated associated;
 }
