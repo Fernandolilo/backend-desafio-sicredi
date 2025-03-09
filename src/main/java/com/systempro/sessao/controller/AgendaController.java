@@ -16,7 +16,9 @@ import com.systempro.sessao.service.AgendaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/agendas")
 @Tag(name = "Agenda Controller", description = "Endpoints for managing agendas") // Definindo a tag do controlador
@@ -25,10 +27,7 @@ public class AgendaController {
     private final AgendaService service;
     private final ModelMapper mapper;
 
-    public AgendaController(AgendaService service, ModelMapper mapper) {
-        this.service = service;
-        this.mapper = mapper;
-    }
+   
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

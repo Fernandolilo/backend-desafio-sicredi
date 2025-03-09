@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.systempro.sessao.controller.AssociedController;
 import com.systempro.sessao.entity.Associated;
 import com.systempro.sessao.entity.dto.AssociatedDTO;
 import com.systempro.sessao.entity.dto.AssociatedNewDTO;

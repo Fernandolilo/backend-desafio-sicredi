@@ -18,5 +18,6 @@ public class VoteNewDTO {
 	
 	private VoteEnum vote;	
 	private UUID id_session;
+	private UUID id_associate;
 
 }

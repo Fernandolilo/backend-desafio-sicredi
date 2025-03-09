@@ -1,4 +1,4 @@
-package com.systempro.sessao.controllerTest;
+package com.systempro.sessao.controller;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;

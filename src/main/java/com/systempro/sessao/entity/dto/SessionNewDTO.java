@@ -15,4 +15,5 @@ public class SessionNewDTO {
 	
 	@NotEmpty(message = "A descrição da pauta é obrigatória.")
 	private String agenda;
+	
 }

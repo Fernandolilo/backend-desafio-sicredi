@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.systempro.sessao.entity.Agenda;
+import com.systempro.sessao.entity.Associated;
 import com.systempro.sessao.entity.Session;
 import com.systempro.sessao.entity.Vote;
 import com.systempro.sessao.entity.dto.SessionNewDTO;
@@ -23,27 +24,25 @@ import com.systempro.sessao.entity.dto.VoteNewDTO;
 import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.exceptions.AgendaNotFoundException;
 import com.systempro.sessao.service.AgendaService;
+import com.systempro.sessao.service.AssociatedService;
+import com.systempro.sessao.service.KafkaProducerService;
 import com.systempro.sessao.service.SessionService;
 import com.systempro.sessao.service.VotacaoService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/sessions")
 public class SessionController {
 
+	private final KafkaProducerService kafkaProducerService; // Mock do Kafka
 	private final SessionService service;
 	private final AgendaService agendaService;
 	private final VotacaoService votacaoService;
+	private final AssociatedService associatedService;
 	private final ModelMapper mapper;
-
-	public SessionController(SessionService service, AgendaService agendaService,
-			VotacaoService votacaoService, ModelMapper mapper) {
-		this.service = service;
-		this.agendaService = agendaService;
-		this.votacaoService = votacaoService;
-		this.mapper = mapper;
-	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
@@ -54,11 +53,11 @@ public class SessionController {
 
 		// Como já validamos que a agenda existe, não é necessário chamar
 		// `existsByDescription` novamente
+
 		entity = service.save(entity);
 
 		return entity.getId();
 	}
-
 
 	@GetMapping("/aberto")
 	public List<Session> findAllByStatus(@RequestParam StatusEnum status) {
@@ -68,22 +67,23 @@ public class SessionController {
 	@PostMapping("/vote")
 	@ResponseStatus(HttpStatus.CREATED)
 	public UUID vote(@RequestBody @Valid VoteNewDTO obj) {
-		/*
-		 * if (obj.getId_session() == null) { throw new
-		 * IllegalArgumentException("ID da sessão não pode ser nulo"); }
-		 */
 		Session vote = service.findById(obj.getId_session())
 				.orElseThrow(() -> new AgendaNotFoundException("Não existe sessão"));
 
-		Vote entity = Vote.builder().session(vote).vote(obj.getVote()).build();
+		Associated associated = associatedService.findById(obj.getId_associate())
+				.orElseThrow(() -> new AgendaNotFoundException("Associado não encontrado"));
 
-		// Como já validamos que a agenda existe, não é necessário chamar
-		// `existsByDescription` novamente
-		entity = votacaoService.save(entity);
+		Vote entity = Vote.builder().associated(associated).session(vote).vote(obj.getVote()).build();
+
+		// Salvar a votação (se necessário)
+		// entity = votacaoService.save(entity);
+
+		kafkaProducerService.sendVote(entity);
+		System.out.println("Chamada para o producer Kafka");
 
 		return obj.getId_session();
 	}
-	
+
 	@PostMapping("/votedto")
 	@ResponseStatus(HttpStatus.CREATED)
 	public VoteDTO voted(@RequestBody @Valid VoteNewDTO obj) {
@@ -94,12 +94,17 @@ public class SessionController {
 		Session vote = service.findById(obj.getId_session())
 				.orElseThrow(() -> new AgendaNotFoundException("Não existe sessão"));
 
-		Vote entity = Vote.builder().session(vote).vote(obj.getVote()).build();
+		Associated associated = associatedService.findById(obj.getId_associate())
+				.orElseThrow(() -> new AgendaNotFoundException("Associado não encontrado"));
+
+		Vote entity = Vote.builder().associated(associated).session(vote).vote(obj.getVote()).build();
 
 		// Como já validamos que a agenda existe, não é necessário chamar
 		// `existsByDescription` novamente
-		entity = votacaoService.save(entity);
-		
+		// entity = votacaoService.save(entity);
+		kafkaProducerService.sendVote(entity);
+		System.out.println("Chamada para o producer Kafka");
+
 		VoteDTO dto = mapper.map(entity, VoteDTO.class);
 
 		return dto;

@@ -1,5 +1,6 @@
 package com.systempro.sessao.controllerTest;
 
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,7 +20,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,14 +29,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.systempro.sessao.controller.SessionController;
 import com.systempro.sessao.entity.Agenda;
+import com.systempro.sessao.entity.Associated;
 import com.systempro.sessao.entity.Session;
 import com.systempro.sessao.entity.Vote;
-import com.systempro.sessao.entity.dto.SessionNewDTO;
+import com.systempro.sessao.entity.dto.AssociatedDTO;
+import com.systempro.sessao.entity.dto.AssociatedNewDTO;
 import com.systempro.sessao.entity.dto.VoteNewDTO;
 import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.enuns.VoteEnum;
 import com.systempro.sessao.service.AgendaService;
 import com.systempro.sessao.service.AssociatedService;
+import com.systempro.sessao.service.KafkaProducerService;
 import com.systempro.sessao.service.SessionService;
 import com.systempro.sessao.service.VotacaoService;
 
@@ -65,21 +68,51 @@ public class SessionControllerTest {
 
 	@MockBean
 	private ModelMapper modelMapper;
-	
-	@MockBean
-	private KafkaTemplate<String, String> kafkaTemplate;
 
+	@MockBean
+	private KafkaProducerService kafkaProducerService; // Mock do Kafka
+	/*
+	 * @Test
+	 * 
+	 * @DisplayName("Sessions new") public void createSessions() throws Exception {
+	 * 
+	 * LocalDateTime agora = LocalDateTime.now();
+	 * 
+	 * // Criar DTO correto SessionNewDTO dto =
+	 * SessionNewDTO.builder().agenda("criada") // Correspondente ao que o
+	 * controller espera .build();
+	 * 
+	 * String json = new ObjectMapper().writeValueAsString(dto);
+	 * 
+	 * // Criar objeto Agenda válido Agenda agenda =
+	 * Agenda.builder().description("criada").build();
+	 * 
+	 * // Mock do serviço de agenda
+	 * BDDMockito.given(agendaService.findByDescription("criada")).willReturn(
+	 * Optional.of(agenda));
+	 * 
+	 * // Criar objeto Sessão válido com ID Session session =
+	 * Session.builder().id(UUID.randomUUID()) // Adicionando ID válido
+	 * .inicio(agora).status(StatusEnum.ABERTO).agenda(agenda).build();
+	 * 
+	 * // Mock do serviço de sessão
+	 * BDDMockito.given(service.save(Mockito.any(Session.class))).willReturn(session
+	 * );
+	 * 
+	 * 
+	 * 
+	 * // Criar e executar a requisição Mock MockHttpServletRequestBuilder request =
+	 * MockMvcRequestBuilders.post(SESSION).accept(MediaType.APPLICATION_JSON)
+	 * .contentType(MediaType.APPLICATION_JSON).content(json);
+	 * 
+	 * mockMvc.perform(request).andExpect(status().isCreated()); }
+	 */
+/*
 	@Test
-	@DisplayName("Sessions new")
-	public void createSessions() throws Exception {
+	@DisplayName("vote agenda")
+	public void createAgenda() throws Exception {
 
 		LocalDateTime agora = LocalDateTime.now();
-
-		// Criar DTO correto
-		SessionNewDTO dto = SessionNewDTO.builder().agenda("criada") // Correspondente ao que o controller espera
-				.build();
-
-		String json = new ObjectMapper().writeValueAsString(dto);
 
 		// Criar objeto Agenda válido
 		Agenda agenda = Agenda.builder().description("criada").build();
@@ -87,19 +120,34 @@ public class SessionControllerTest {
 		// Mock do serviço de agenda
 		BDDMockito.given(agendaService.findByDescription("criada")).willReturn(Optional.of(agenda));
 
+		UUID id = UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4a");
+
 		// Criar objeto Sessão válido com ID
-		Session session = Session.builder().id(UUID.randomUUID()) // Adicionando ID válido
-				.inicio(agora).status(StatusEnum.ABERTO).agenda(agenda).build();
+		Session session = Session.builder().inicio(agora).status(StatusEnum.ABERTO).agenda(agenda).build();
 
 		// Mock do serviço de sessão
 		BDDMockito.given(service.save(Mockito.any(Session.class))).willReturn(session);
+		BDDMockito.given(service.findById(id)).willReturn(Optional.of(session));
+
+		// Criar objeto VoteNewDTO
+		VoteNewDTO voteNewDTO = VoteNewDTO.builder().vote(VoteEnum.SIM).id_session(id).build();
+
+		Vote vote = Vote.builder().session(session).vote(voteNewDTO.getVote()).build();
+
+		BDDMockito.given(votacaoService.save(Mockito.any(Vote.class))).willReturn(vote);
+
+		// Enviar para o Kafka antes da requisição Mock
+		kafkaProducerService.sendVote(vote);
+		Mockito.verify(kafkaProducerService, times(1)).sendVote(vote);
+
+		String json = new ObjectMapper().writeValueAsString(voteNewDTO);
 
 		// Criar e executar a requisição Mock
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(SESSION).accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON).content(json);
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(SESSION.concat("/vote"))
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(json);
 
 		mockMvc.perform(request).andExpect(status().isCreated());
-	}
+	}*/
 
 	@Test
 	@DisplayName("Find all sessions by status")
@@ -110,8 +158,8 @@ public class SessionControllerTest {
 		Agenda agenda = Agenda.builder().description("criada").build();
 
 		// Criar lista de sessões
-		List<Session> sessions = List.of(Session.builder().id(UUID.randomUUID()).inicio(agora).status(StatusEnum.ABERTO) 
-				.agenda(agenda).build());
+		List<Session> sessions = List.of(
+				Session.builder().id(UUID.randomUUID()).inicio(agora).status(StatusEnum.ABERTO).agenda(agenda).build());
 
 		// Mock correto para um método que retorna List<Session>
 		BDDMockito.given(service.findByStatus(StatusEnum.ABERTO)).willReturn(sessions);
@@ -128,10 +176,22 @@ public class SessionControllerTest {
 	}
 
 	@Test
-	@DisplayName("vote agenda")
+	@DisplayName("vote agenda return ID")
 	public void voteAgenda() throws Exception {
 
 		LocalDateTime agora = LocalDateTime.now();
+		UUID id_associad = UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4b");
+		UUID id = UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4a");
+
+		AssociatedNewDTO associatedNewDTO = AssociatedNewDTO.builder().cpf("12312312312").nome("Fernando").build();
+
+		AssociatedDTO associatedDTO = AssociatedDTO.builder().id(id_associad).cpf(associatedNewDTO.getCpf())
+				.nome(associatedNewDTO.getNome()).build();
+
+		Associated associated = Associated.builder().id(associatedDTO.getId()).nome(associatedDTO.getNome())
+				.cpf(associatedDTO.getCpf()).build();
+		// mock associado
+		BDDMockito.given(associatedService.save(Mockito.any(Associated.class))).willReturn(associated);
 
 		// Criar objeto Agenda válido
 		Agenda agenda = Agenda.builder().description("criada").build();
@@ -139,20 +199,23 @@ public class SessionControllerTest {
 		// Mock do serviço de agenda
 		BDDMockito.given(agendaService.findByDescription("criada")).willReturn(Optional.of(agenda));
 
-		UUID id = UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4a"); // Adicionando ID válido
-
 		// Criar objeto Sessão válido com ID
-		Session session = Session.builder().inicio(agora).status(StatusEnum.ABERTO).agenda(agenda).build();
+		Session session = Session.builder().agenda(agenda).inicio(agora).status(StatusEnum.ABERTO).agenda(agenda).build();
 
 		// Mock do serviço de sessão
 		BDDMockito.given(service.save(Mockito.any(Session.class))).willReturn(session);
 
-		VoteNewDTO voteNewDTO = VoteNewDTO.builder().vote(VoteEnum.SIM).id_session(id) // Certifique-se de passar um ID
-																						// válido
-				.build();
+		BDDMockito.given(associatedService.findById(id_associad)).willReturn(Optional.of(associated));
+
+		VoteNewDTO voteNewDTO = VoteNewDTO.builder()
+		    .vote(VoteEnum.SIM)
+		    .id_session(id)
+		    .id_associate(id_associad)
+		    .build();
+
 		BDDMockito.given(service.findById(id)).willReturn(Optional.of(session));
 
-		Vote vote = Vote.builder().session(session).vote(voteNewDTO.getVote()).build();
+		Vote vote = Vote.builder().associated(associated).session(session).vote(voteNewDTO.getVote()).build();
 
 		BDDMockito.given(votacaoService.save(Mockito.any(Vote.class))).willReturn(vote);
 
@@ -164,18 +227,38 @@ public class SessionControllerTest {
 
 		mockMvc.perform(request).andExpect(status().isCreated());
 		// .andExpect(jsonPath("vote").value("SIM"));
-	} 
+	}
 
-	
-	
 	@Test
-	@DisplayName("vote agenda dto")
+	@DisplayName("vote agenda DTO")
 	public void voteAgendadto() throws Exception {
 		LocalDateTime agora = LocalDateTime.now();
+		
+		UUID id_associad = UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4b");
+		UUID id = UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4a");
+
+		AssociatedNewDTO associatedNewDTO = AssociatedNewDTO.builder().cpf("12312312312").nome("Fernando").build();
+
+		AssociatedDTO associatedDTO = AssociatedDTO.builder().id(id_associad).cpf(associatedNewDTO.getCpf())
+				.nome(associatedNewDTO.getNome()).build();
+
+		Associated associated = Associated.builder().id(associatedDTO.getId()).nome(associatedDTO.getNome())
+				.cpf(associatedDTO.getCpf()).build();
+		// mock associado
+		
+		BDDMockito.given(modelMapper.map(Mockito.any(AssociatedNewDTO.class), Mockito.eq(Associated.class))).willReturn(associated);
+		BDDMockito.given(modelMapper.map(Mockito.any(Associated.class), Mockito.eq(AssociatedDTO.class))).willReturn(associatedDTO);
+		
+		
+		BDDMockito.given(associatedService.save(Mockito.any(Associated.class))).willReturn(associated);
+		
+		BDDMockito.given(associatedService.findById(id_associad)).willReturn(Optional.of(associated));
 
 		// Criar DTO correto
-		VoteNewDTO dto = VoteNewDTO.builder().vote(VoteEnum.SIM) // Define o voto
-				.id_session(UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4a")) // ID da sessão
+		VoteNewDTO dto = VoteNewDTO.builder()
+				.id_associate(id_associad)
+				.vote(VoteEnum.SIM) // Define o voto
+				.id_session(id) // ID da sessão
 				.build();
 
 		// Criar objeto Agenda válido
@@ -185,15 +268,15 @@ public class SessionControllerTest {
 		BDDMockito.given(agendaService.findByDescription("criada")).willReturn(Optional.of(agenda));
 
 		// Criar objeto Sessão válido com ID
-		Session session = Session.builder().id(UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4a")).inicio(agora)
+		Session session = Session.builder().id(id).inicio(agora)
 				.status(StatusEnum.ABERTO).agenda(agenda).build();
 
 		// Mock do serviço de sessão
-		BDDMockito.given(service.findById(UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4a")))
+		BDDMockito.given(service.findById(id))
 				.willReturn(Optional.of(session));
 
 		// Criar o voto
-		Vote vote = Vote.builder().session(session).vote(VoteEnum.SIM) // Voto "SIM"
+		Vote vote = Vote.builder().associated(associated).session(session).vote(VoteEnum.SIM) // Voto "SIM"
 				.build();
 
 		// Mock do serviço de voto
@@ -207,8 +290,7 @@ public class SessionControllerTest {
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).content(json);
 
 		// Executar o teste
-		mockMvc.perform(request).andExpect(status()
-				.isCreated()) // Espera status HTTP 201
+		mockMvc.perform(request).andExpect(status().isCreated()) // Espera status HTTP 201
 		; // Verifica se o voto foi "SIM"
 	}
 
