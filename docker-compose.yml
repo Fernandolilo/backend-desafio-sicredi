@@ -9,10 +9,13 @@ services:
       dockerfile: Dockerfile
     networks:
       - java-na-veia
+    depends_on:
+      - kafka
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
+    restart: always
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     networks:
@@ -21,6 +24,7 @@ services:
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
+    restart: always
     depends_on:
       - zookeeper
     environment:
@@ -28,22 +32,20 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    ports:
-      - "9092:9092"
     networks:
       - java-na-veia
 
   kafka-ui:
-    image: provectuslabs/kafka-ui
+    image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     restart: always
     ports:
       - "8081:8080"
-    environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
     depends_on:
       - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:9092
     networks:
       - java-na-veia
 
