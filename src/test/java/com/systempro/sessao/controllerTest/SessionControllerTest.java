@@ -1,6 +1,5 @@
 package com.systempro.sessao.controllerTest;
 
-import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,9 +38,9 @@ import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.enuns.VoteEnum;
 import com.systempro.sessao.service.AgendaService;
 import com.systempro.sessao.service.AssociatedService;
-import com.systempro.sessao.service.KafkaProducerService;
 import com.systempro.sessao.service.SessionService;
 import com.systempro.sessao.service.VotacaoService;
+import com.systempro.sessao.service.kafka.KafkaProducer;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -70,7 +69,7 @@ public class SessionControllerTest {
 	private ModelMapper modelMapper;
 
 	@MockBean
-	private KafkaProducerService kafkaProducerService; // Mock do Kafka
+	private KafkaProducer kafkaProducerService; // Mock do Kafka
 	/*
 	 * @Test
 	 * 

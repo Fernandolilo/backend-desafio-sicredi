@@ -25,9 +25,9 @@ import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.exceptions.AgendaNotFoundException;
 import com.systempro.sessao.service.AgendaService;
 import com.systempro.sessao.service.AssociatedService;
-import com.systempro.sessao.service.KafkaProducerService;
 import com.systempro.sessao.service.SessionService;
 import com.systempro.sessao.service.VotacaoService;
+import com.systempro.sessao.service.kafka.KafkaProducer;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/sessions")
 public class SessionController {
 
-	private final KafkaProducerService kafkaProducerService; // Mock do Kafka
+	private final KafkaProducer kafkaProducerService; // Mock do Kafka
 	private final SessionService service;
 	private final AgendaService agendaService;
 	private final VotacaoService votacaoService;
