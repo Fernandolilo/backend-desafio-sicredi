@@ -49,7 +49,7 @@ public class SessionController {
 	public UUID create(@RequestBody @Valid SessionNewDTO obj) {
 		Agenda agenda = agendaService.findByDescription(obj.getAgenda())
 				.orElseThrow(() -> new AgendaNotFoundException("Não existe pauta para seguir com sessão"));
-		Session entity = Session.builder().inicio(LocalDateTime.now()).status(StatusEnum.ABERTO).agenda(agenda).build();
+		Session entity = Session.builder().inicio(LocalDateTime.now()).fim(LocalDateTime.now()).status(StatusEnum.ABERTO).agenda(agenda).build();
 
 		// Como já validamos que a agenda existe, não é necessário chamar
 		// `existsByDescription` novamente
@@ -78,7 +78,7 @@ public class SessionController {
 		// Salvar a votação (se necessário)
 		// entity = votacaoService.save(entity);
 
-		kafkaProducerService.sendVote(entity);
+		kafkaProducerService.sendVote(obj);
 		System.out.println("Chamada para o producer Kafka");
 
 		return obj.getId_session();
@@ -102,7 +102,7 @@ public class SessionController {
 		// Como já validamos que a agenda existe, não é necessário chamar
 		// `existsByDescription` novamente
 		// entity = votacaoService.save(entity);
-		kafkaProducerService.sendVote(entity);
+		kafkaProducerService.sendVote(obj);
 		System.out.println("Chamada para o producer Kafka");
 
 		VoteDTO dto = mapper.map(entity, VoteDTO.class);

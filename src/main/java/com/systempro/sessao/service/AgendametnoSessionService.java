@@ -4,5 +4,4 @@ public interface AgendametnoSessionService {
 
 	public void agendamentoTarefas();
 	
-	public void saveVotos();
 }

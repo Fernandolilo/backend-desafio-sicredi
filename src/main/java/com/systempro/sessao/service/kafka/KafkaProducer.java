@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.systempro.sessao.entity.Vote;
+import com.systempro.sessao.entity.dto.VoteNewDTO;
 
 @Service
 public class KafkaProducer {
@@ -19,7 +20,7 @@ public class KafkaProducer {
     @Autowired
     private ObjectMapper objectMapper; // Jackson para converter em JSON
 
-    public void sendVote(Vote vote) {
+    public void sendVote(VoteNewDTO  vote) {
         try {
             String voteJson = objectMapper.writeValueAsString(vote);
             kafkaTemplate.send(TOPIC, voteJson);

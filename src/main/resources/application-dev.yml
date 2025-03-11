@@ -1,0 +1,35 @@
+
+
+spring:
+  application:
+    name: api
+  datasource:
+    url: jdbc:postgresql://localhost:5432/votospopule  # Alterar para o nome do seu banco
+    username: roor  # Alterar para seu usuário do PostgreSQL
+    password: root  # Alterar para sua senha do PostgreSQL
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      max-lifetime: 1800000
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update  # Pode ser 'validate', 'update', 'create', ou 'create-drop'
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092  # Ajustar conforme ambiente
+    consumer:
+      group-id: order-vote-popule
+      auto-offset-reset: earliest
+    producer:
+      retries: 3
+      properties:
+        enable.idempotence: true
+

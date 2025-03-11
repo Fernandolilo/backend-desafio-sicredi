@@ -7,12 +7,12 @@ spring:
   application:
     name: api
   profiles:
-    active: "test"  # Certifique-se de que o perfil esteja configurado corretamente no ambiente
+    active: "dev"  # Certifique-se de que o perfil esteja configurado corretamente no ambiente
 
   kafka:
     bootstrap-servers: localhost:9092  # Endereço do servidor Kafka
     consumer:
-      group-id: my-group  # ID do grupo do consumidor Kafka
+      group-id: order-vote-popule  # ID do grupo do consumidor Kafka
       auto-offset-reset: earliest  # Configuração para o consumidor começar do início dos tópicos
     producer:
       retries: 3  # Número de tentativas de reenvio de mensagens em caso de falha
