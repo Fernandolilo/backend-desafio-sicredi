@@ -62,7 +62,7 @@ public class AgendaControllerTest {
 		BDDMockito.given(modelMapper.map(Mockito.any(AgendaNewDTO.class), Mockito.eq(Agenda.class))).willReturn(agenda);
 		BDDMockito.given(modelMapper.map(Mockito.any(Agenda.class), Mockito.eq(AgendaDTO.class))).willReturn(agendaDTO);
 
-		BDDMockito.given(service.save(Mockito.any(Agenda.class))).willReturn(agenda);
+		BDDMockito.given(service.save(Mockito.any(AgendaNewDTO.class))).willReturn(agendaDTO);
 		
 		String json = new ObjectMapper().writeValueAsString(dto);
 

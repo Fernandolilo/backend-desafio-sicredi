@@ -190,7 +190,7 @@ public class SessionControllerTest {
 		Associated associated = Associated.builder().id(associatedDTO.getId()).nome(associatedDTO.getNome())
 				.cpf(associatedDTO.getCpf()).build();
 		// mock associado
-		BDDMockito.given(associatedService.save(Mockito.any(Associated.class))).willReturn(associated);
+		BDDMockito.given(associatedService.save(Mockito.any(AssociatedNewDTO.class))).willReturn(associatedDTO);
 
 		// Criar objeto Agenda válido
 		Agenda agenda = Agenda.builder().description("criada").build();
@@ -249,7 +249,7 @@ public class SessionControllerTest {
 		BDDMockito.given(modelMapper.map(Mockito.any(Associated.class), Mockito.eq(AssociatedDTO.class))).willReturn(associatedDTO);
 		
 		
-		BDDMockito.given(associatedService.save(Mockito.any(Associated.class))).willReturn(associated);
+		BDDMockito.given(associatedService.save(Mockito.any(AssociatedNewDTO.class))).willReturn(associatedDTO);
 		
 		BDDMockito.given(associatedService.findById(id_associad)).willReturn(Optional.of(associated));
 

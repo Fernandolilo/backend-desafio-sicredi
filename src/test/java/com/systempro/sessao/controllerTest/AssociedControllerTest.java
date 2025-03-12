@@ -59,7 +59,7 @@ public class AssociedControllerTest {
 		BDDMockito.given(modelMapper.map(Mockito.any(AssociatedNewDTO.class), Mockito.eq(Associated.class))).willReturn(associated);
 		BDDMockito.given(modelMapper.map(Mockito.any(Associated.class), Mockito.eq(AssociatedDTO.class))).willReturn(associatedDTO);
 		
-		BDDMockito.given(service.save(Mockito.any(Associated.class))).willReturn(associated);
+		BDDMockito.given(service.save(Mockito.any(AssociatedNewDTO.class))).willReturn(associatedDTO);
 		// Criar e executar a requisição Mock
 		
 	

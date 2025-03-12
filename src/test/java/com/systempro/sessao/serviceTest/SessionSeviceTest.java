@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -24,8 +25,11 @@ import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.Session;
 import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.repository.SessionRepository;
+import com.systempro.sessao.service.AgendaService;
+import com.systempro.sessao.service.AssociatedService;
 import com.systempro.sessao.service.SessionService;
 import com.systempro.sessao.service.impl.SessionServiceImpl;
+import com.systempro.sessao.service.kafka.KafkaProducer;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -34,8 +38,18 @@ public class SessionSeviceTest {
 
 	@MockBean
 	SessionRepository repository;
-	
+	@MockBean
 	SessionService service;
+	
+	@MockBean
+	AgendaService agegendaService;
+	@MockBean
+	AssociatedService associatedService;
+	@MockBean
+	ModelMapper mapper;
+	@MockBean
+	KafkaProducer kafkaProducerService; // Mock do Kafka
+
 	
 	
 	private LocalDateTime agora = LocalDateTime.now();
@@ -44,7 +58,7 @@ public class SessionSeviceTest {
 	
 	@BeforeEach
 	public void setUp() {
-		this.service = new SessionServiceImpl(repository);
+		this.service = new SessionServiceImpl(repository, agegendaService, associatedService, mapper, kafkaProducerService);
 	}
 	
 	@Test

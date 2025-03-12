@@ -1,6 +1,5 @@
 package com.systempro.sessao.controller;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.systempro.sessao.entity.Agenda;
 import com.systempro.sessao.entity.dto.AgendaDTO;
 import com.systempro.sessao.entity.dto.AgendaNewDTO;
 import com.systempro.sessao.service.AgendaService;
@@ -24,21 +22,14 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Agenda Controller", description = "Endpoints for managing agendas") // Definindo a tag do controlador
 public class AgendaController {
 
-    private final AgendaService service;
-    private final ModelMapper mapper;
+	private final AgendaService service;
 
-   
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(
-        summary = "Create a new agenda", 
-        description = "This endpoint creates a new agenda based on the provided agenda data",
-        tags = {"Agenda Controller"}  // Adicionando a tag específica para este método
-    )
-    public AgendaDTO create(@RequestBody @Valid AgendaNewDTO dto) {        
-        Agenda entity = mapper.map(dto, Agenda.class);        
-        entity = service.save(entity);        
-        return mapper.map(entity, AgendaDTO.class);
-    }
+	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
+	@Operation(summary = "Create a new agenda", description = "This endpoint creates a new agenda based on the provided agenda data", tags = {
+			"Agenda Controller" } // Adicionando a tag específica para este método
+	)
+	public AgendaDTO create(@RequestBody @Valid AgendaNewDTO dto) {		
+		return service.save(dto);
+	}
 }
