@@ -19,8 +19,6 @@ spring:
       properties:
         enable.idempotence: true  # Habilita a idempotência no produtor para evitar mensagens duplicadas
 
- 
-
 springdoc:
   api-docs:
     enabled: true
