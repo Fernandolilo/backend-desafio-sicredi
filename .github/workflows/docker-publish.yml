@@ -1,5 +1,6 @@
 name: Continuous Integration
-on: [push]  
+
+on: [push]
 
 jobs:
   build:
@@ -22,7 +23,22 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17'  # Defina a versão do Java desejada (Ex: 8, 11, 17, 21)
-          distribution: 'temurin'  # Escolha uma distribuição: 'temurin', 'zulu', 'adopt', etc.
-      - name: Build Desafil Back-End Sicredi
-        run: mvn spring-boot:build-image
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Maven cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: maven-
+
+      - name: Build and run tests with coverage
+        run: mvn clean verify jacoco:report
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: target/site/jacoco/jacoco.xml
+          fail_ci_if_error: true
