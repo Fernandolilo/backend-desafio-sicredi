@@ -293,4 +293,11 @@ public class SessionControllerTest {
 		; // Verifica se o voto foi "SIM"
 	}
 
+	
+	@Test
+	@DisplayName("find By Vote Cont Yes Not")
+	public void findByVoteContYesNot() {
+		
+		
+	}
 }

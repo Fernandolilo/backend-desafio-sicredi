@@ -7,7 +7,7 @@ spring:
   application:
     name: api
   profiles:
-    active: "dev"  # Certifique-se de que o perfil esteja configurado corretamente no ambiente
+    active: "test"  # Certifique-se de que o perfil esteja configurado corretamente no ambiente
 
   kafka:
     bootstrap-servers: localhost:9092  # Endereço do servidor Kafka
