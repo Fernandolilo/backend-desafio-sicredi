@@ -175,11 +175,6 @@ public class SessionSeviceTest {
 
 	    // Simulando a chamada do Kafka Producer
 	    Mockito.doNothing().when(kafkaProducerService).sendVote(Mockito.any(VoteNewDTO.class));
-
-	  
-	        // Chamando o método que deve lançar a exceção quando o CPF já foi preenchido
-	       // service.saveToVote(voteNewDTO);
-	    
 	    // Verificando se o Kafka foi chamado corretamente
 	    Mockito.verify(kafkaProducerService, Mockito.times(0)).sendVote(Mockito.any(VoteNewDTO.class));
 
