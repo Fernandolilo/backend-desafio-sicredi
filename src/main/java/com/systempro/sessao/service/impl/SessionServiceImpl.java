@@ -18,6 +18,7 @@ import com.systempro.sessao.entity.dto.VoteNewDTO;
 import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.exceptions.AgendaNotFoundException;
 import com.systempro.sessao.repository.SessionRepository;
+import com.systempro.sessao.repository.VoteRepository;
 import com.systempro.sessao.service.AgendaService;
 import com.systempro.sessao.service.AssociatedService;
 import com.systempro.sessao.service.SessionService;
@@ -33,6 +34,7 @@ public class SessionServiceImpl implements SessionService {
 	private final SessionRepository repositoy;
 	private final AgendaService agendaService;
 	private final AssociatedService associatedService;
+	private final VoteRepository voteRepository;
 	private final ModelMapper mapper;
 	private final KafkaProducer kafkaProducerService; // Mock do Kafka
 
@@ -69,17 +71,17 @@ public class SessionServiceImpl implements SessionService {
 
 	@Override
 	public VoteDTO voted(VoteNewDTO obj) {
+		String cpf = "";
 		Session vote = findById(obj.getId_session())
 				.orElseThrow(() -> new AgendaNotFoundException("Não existe sessão"));
 
 		Associated associated = associatedService.findById(obj.getId_associate())
 				.orElseThrow(() -> new AgendaNotFoundException("Associado não encontrado"));
 
+		
 		Vote entity = Vote.builder().associated(associated).session(vote).vote(obj.getVote()).build();
-
-		// Como já validamos que a agenda existe, não é necessário chamar
-		// `existsByDescription` novamente
-		// entity = votacaoService.save(entity);
+		
+		
 		kafkaProducerService.sendVote(obj);
 		System.out.println("Chamada para o producer Kafka");
 
@@ -94,8 +96,11 @@ public class SessionServiceImpl implements SessionService {
 
 		Associated associated = associatedService.findById(obj.getId_associate())
 				.orElseThrow(() -> new AgendaNotFoundException("Associado não encontrado"));
+		
 
 		Vote entity = Vote.builder().associated(associated).session(vote).vote(obj.getVote()).build();
+		
+
 
 		// Salvar a votação (se necessário)
 		// entity = votacaoService.save(entity);

@@ -4,7 +4,7 @@ spring:
   application:
     name: api
   datasource:
-    url: jdbc:postgresql://localhost:5432/votospopule  # Alterar para o nome do seu banco
+    url: jdbc:postgresql://postgres:5432/votospopule  # Alterar para o nome do seu banco
     username: roor  # Alterar para seu usuário do PostgreSQL
     password: root  # Alterar para sua senha do PostgreSQL
     driver-class-name: org.postgresql.Driver

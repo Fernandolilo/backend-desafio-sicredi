@@ -13,5 +13,6 @@ import com.systempro.sessao.enuns.StatusEnum;
 public interface SessionRepository extends JpaRepository<Session, UUID> {
 
 	List<Session> findByStatus(StatusEnum status);
+	
 
 }

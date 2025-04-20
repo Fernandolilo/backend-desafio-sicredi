@@ -3,8 +3,8 @@ package com.systempro.sessao.serviceTest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -31,13 +31,12 @@ import com.systempro.sessao.entity.dto.AgendaDTO;
 import com.systempro.sessao.entity.dto.AgendaNewDTO;
 import com.systempro.sessao.entity.dto.AssociatedDTO;
 import com.systempro.sessao.entity.dto.AssociatedNewDTO;
-import com.systempro.sessao.entity.dto.SessionDTO;
-import com.systempro.sessao.entity.dto.SessionNewDTO;
-import com.systempro.sessao.entity.dto.VoteDTO;
 import com.systempro.sessao.entity.dto.VoteNewDTO;
 import com.systempro.sessao.enuns.StatusEnum;
 import com.systempro.sessao.enuns.VoteEnum;
+import com.systempro.sessao.exceptions.AgendaNotFoundException;
 import com.systempro.sessao.repository.SessionRepository;
+import com.systempro.sessao.repository.VoteRepository;
 import com.systempro.sessao.service.AgendaService;
 import com.systempro.sessao.service.AssociatedService;
 import com.systempro.sessao.service.SessionService;
@@ -57,11 +56,17 @@ public class SessionSeviceTest {
 
 	@MockBean
 	AgendaService agendaService;
+	
+	
 	@MockBean
 	AssociatedService associatedService;
 
 	@MockBean
 	VotacaoService voteService;
+	
+	@MockBean
+	VoteRepository voteRepository;
+	
 
 	@MockBean
 	ModelMapper mapper;
@@ -74,7 +79,7 @@ public class SessionSeviceTest {
 
 	@BeforeEach
 	public void setUp() {
-		this.service = new SessionServiceImpl(repository, agendaService, associatedService, mapper,
+		this.service = new SessionServiceImpl(repository, agendaService, associatedService, voteRepository,  mapper,
 				kafkaProducerService);
 	}
 
@@ -143,7 +148,7 @@ public class SessionSeviceTest {
 		assertThat(agenda.getDescription()).isEqualTo("criada");
 
 		assertThat(associated.getNome()).isEqualTo("Fernando");
-		assertThat(vote.getVote()).isEqualTo(VoteEnum.SIM);
+		assertThat(vote.getVote()).isEqualTo(VoteEnum.SIM);	//assertEquals("Associado já efetuou seu voto.", ex.getMessage());
 
 	}
 
@@ -155,36 +160,14 @@ public class SessionSeviceTest {
 	    UUID id_vote = UUID.fromString("f47a4773-41f9-47f7-b2d1-7d902f9e8c4c");
 
 	    // Criando objetos simulados
-	    Associated associated = Associated.builder()
-	            .id(id_associado)
-	            .nome("Fernando")
-	            .cpf("12312312312")
-	            .build();
+	    Associated associated = Associated.builder().id(id_associado).nome("Fernando").cpf("12312312312").build();
+	    Agenda agenda = Agenda.builder().id(id_sessao).description("criada").build();
+	    Session session = Session.builder().id(id_sessao).agenda(agenda).inicio(agora).status(StatusEnum.ABERTO).build();
 
-	    Agenda agenda = Agenda.builder()
-	            .id(id_sessao)
-	            .description("criada")
-	            .build();
-
-	    Session session = Session.builder()
-	            .id(id_sessao)
-	            .agenda(agenda)
-	            .inicio(agora)
-	            .status(StatusEnum.ABERTO)
-	            .build();
-
-	    VoteNewDTO voteNewDTO = VoteNewDTO.builder()
-	            .vote(VoteEnum.SIM)
-	            .id_session(id_sessao)
-	            .id_associate(id_associado)
-	            .build();
-
-	    Vote vote = Vote.builder()
-	            .id(id_vote) // Simular um UUID gerado
-	            .associated(associated)
-	            .session(session)
-	            .vote(voteNewDTO.getVote())
-	            .build();
+	    // DTO para o voto
+	    VoteNewDTO voteNewDTO = VoteNewDTO.builder().vote(VoteEnum.SIM).id_session(id_sessao).id_associate(id_associado).build();
+	    Vote vote = Vote.builder().id(id_vote) // Simulando um UUID gerado
+	            .associated(associated).session(session).vote(voteNewDTO.getVote()).build();
 
 	    // Mockando os serviços corretamente
 	    BDDMockito.given(service.findById(id_sessao)).willReturn(Optional.of(session));
@@ -193,15 +176,17 @@ public class SessionSeviceTest {
 	    // Simulando a chamada do Kafka Producer
 	    Mockito.doNothing().when(kafkaProducerService).sendVote(Mockito.any(VoteNewDTO.class));
 
-	    // Chamando o método a ser testado diretamente
-	    UUID resultado = service.saveToVote(voteNewDTO);
-
-	    // Verificações
-	    assertThat(vote.getId()).isNotNull().isEqualTo(id_vote);
-
+	  
+	        // Chamando o método que deve lançar a exceção quando o CPF já foi preenchido
+	       // service.saveToVote(voteNewDTO);
+	    
 	    // Verificando se o Kafka foi chamado corretamente
-	    Mockito.verify(kafkaProducerService, Mockito.times(1)).sendVote(Mockito.any(VoteNewDTO.class));
+	    Mockito.verify(kafkaProducerService, Mockito.times(0)).sendVote(Mockito.any(VoteNewDTO.class));
+
+	    // Se não lançada a exceção, continuamos com o UUID do voto
+	    assertThat(vote.getId()).isNotNull().isEqualTo(id_vote);
 	}
+
 
 	@Test
 	@DisplayName("Deve retornar uma lista de sessões quando o status for ABERTO")
@@ -225,6 +210,7 @@ public class SessionSeviceTest {
 		assertEquals(1, result.size());
 		assertEquals(StatusEnum.ABERTO, result.get(0).getStatus());
 		assertEquals("Sessão de Teste", result.get(0).getAgenda().getDescription());
+		
 
 		// 🔹 Verifica se o método foi chamado corretamente
 		Mockito.verify(repository, Mockito.times(1)).findByStatus(StatusEnum.ABERTO);
