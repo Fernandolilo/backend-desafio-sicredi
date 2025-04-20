@@ -35,10 +35,9 @@ jobs:
 
       - name: Build and run tests with coverage
         run: mvn clean verify jacoco:report
-
     #  - name: Upload coverage reports to Codecov
      #   uses: codecov/codecov-action@v5
       #  with:
        #   token: ${{ secrets.CODECOV_TOKEN }}
         #  files: target/site/jacoco/jacoco.xml
-          fail_ci_if_error: true
+         # fail_ci_if_error: true
